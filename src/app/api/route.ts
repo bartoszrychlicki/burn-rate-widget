@@ -66,8 +66,15 @@ export async function GET() {
     // Earn rate per hour (based on total hours in month)
     const earnRateHour = totalHoursInMonth > 0 ? estimatedIncomeSum / totalHoursInMonth : 0
 
+    // Flow rate per second (difference between earn and burn rate per second)
+    const flowRateSecond = earnRateSecond - burnRateSecond
     // Flow rate per hour (difference between earn and burn rate)
     const flowRate = earnRateHour - burnRateHour
+
+    // Calculate remaining seconds in the month
+    const remainingSecondsInMonth = totalSecondsInMonth - secondsPassed
+    // Calculate potential savings by the end of the month
+    const potentialSavings = flowRateSecond * remainingSecondsInMonth
 
     // Return all burn rates and earn rates in the API response
     return NextResponse.json({ 
@@ -77,7 +84,9 @@ export async function GET() {
       earnRateSecond,
       earnRateMinute,
       earnRateHour,
-      flowRate
+      flowRateSecond,
+      flowRate,
+      potentialSavings
     })
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 })
