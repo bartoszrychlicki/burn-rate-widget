@@ -1,0 +1,44 @@
+// src/app/api/months/route.ts
+
+import { NextResponse } from 'next/server'
+import axios from 'axios'
+
+export async function GET() {
+  const token = process.env.AIRTABLE_TOKEN
+  const baseId = process.env.AIRTABLE_BASE_ID
+  const url = `https://api.airtable.com/v0/${baseId}/months`
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const records = response.data.records
+    const lipiec = records.find((r: any) => r.fields.Name === 'Lipiec')
+
+    if (!lipiec) {
+      return NextResponse.json({ error: 'Nie znaleziono miesiąca Lipiec' }, { status: 404 })
+    }
+
+    const rawExpenses = String(lipiec.fields['expenses_sum'] || '0')
+    const expensesSum = parseFloat(
+      rawExpenses.replace('PLN', '').replace(',', '').trim()
+    )
+    
+    const rawIncome = String(lipiec.fields['income_sum'] || '0')
+    const incomeSum = parseFloat(
+      rawIncome.replace('PLN', '').replace('-', '').replace(',', '').trim()
+    )
+
+    const startOfMonth = new Date('2025-07-01T00:00:00')
+    const now = new Date()
+    const secondsPassed = Math.floor((now.getTime() - startOfMonth.getTime()) / 1000)
+console.log(expensesSum);
+    const burnRate = secondsPassed > 0 ? expensesSum / secondsPassed : 0
+    return NextResponse.json({ burnRate })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 })
+  }
+}
