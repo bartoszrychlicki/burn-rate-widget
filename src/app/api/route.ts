@@ -32,6 +32,11 @@ export async function GET() {
       rawIncome.replace('PLN', '').replace('-', '').replace(',', '').trim()
     )
 
+    const rawEstimatedIncome = String(lipiec.fields['estimated_income_sum'] || '0')
+    const estimatedIncomeSum = parseFloat(
+      rawEstimatedIncome.replace('PLN', '').replace('-', '').replace(',', '').trim()
+    )
+
     const startOfMonth = new Date('2025-07-01T00:00:00')
     const now = new Date()
     // Calculate how many seconds have passed since the start of the month
@@ -47,8 +52,33 @@ export async function GET() {
     const hoursPassed = Math.floor(minutesPassed / 60)
     // Burn rate per hour
     const burnRateHour = hoursPassed > 0 ? expensesSum / hoursPassed : 0
-    // Return all burn rates in the API response
-    return NextResponse.json({ burnRateSecond, burnRateMinute, burnRateHour })
+
+    // Calculate total seconds, minutes, and hours in the current month
+    const endOfMonth = new Date('2025-07-31T23:59:59')
+    const totalSecondsInMonth = Math.floor((endOfMonth.getTime() - startOfMonth.getTime()) / 1000)
+    const totalMinutesInMonth = Math.floor(totalSecondsInMonth / 60)
+    const totalHoursInMonth = Math.floor(totalMinutesInMonth / 60)
+
+    // Earn rate per second (based on total seconds in month)
+    const earnRateSecond = totalSecondsInMonth > 0 ? estimatedIncomeSum / totalSecondsInMonth : 0
+    // Earn rate per minute (based on total minutes in month)
+    const earnRateMinute = totalMinutesInMonth > 0 ? estimatedIncomeSum / totalMinutesInMonth : 0
+    // Earn rate per hour (based on total hours in month)
+    const earnRateHour = totalHoursInMonth > 0 ? estimatedIncomeSum / totalHoursInMonth : 0
+
+    // Flow rate per hour (difference between earn and burn rate)
+    const flowRate = earnRateHour - burnRateHour
+
+    // Return all burn rates and earn rates in the API response
+    return NextResponse.json({ 
+      burnRateSecond, 
+      burnRateMinute, 
+      burnRateHour,
+      earnRateSecond,
+      earnRateMinute,
+      earnRateHour,
+      flowRate
+    })
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 })
   }
