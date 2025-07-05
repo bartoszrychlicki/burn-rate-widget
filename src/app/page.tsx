@@ -99,7 +99,7 @@ export default function HomePage() {
             🔥 Burn Rate per Second: {data.burnRateSecond.toFixed(8)} PLN/s
           </div>
           <div style={{ fontSize: '2rem', margin: '1rem' }}>
-            ⏱️ Burn Rate per Minute: {data.burnRateMinute.toFixed(4)} PLN/min
+            ⏱️ Burn Rate per Minute: {data.burnRateMinute.toFixed(8)} PLN/min
           </div>
           <div style={{ fontSize: '2rem', margin: '1rem' }}>
             🕒 Burn Rate per Hour: {data.burnRateHour.toFixed(2)} PLN/h
@@ -109,7 +109,7 @@ export default function HomePage() {
             💰 Earn Rate per Second: {data.earnRateSecond.toFixed(8)} PLN/s
           </div>
           <div style={{ fontSize: '2rem', margin: '1rem' }}>
-            ⏱️ Earn Rate per Minute: {data.earnRateMinute.toFixed(4)} PLN/min
+            ⏱️ Earn Rate per Minute: {data.earnRateMinute.toFixed(8)} PLN/min
           </div>
           <div style={{ fontSize: '2rem', margin: '1rem' }}>
             🕒 Earn Rate per Hour: {data.earnRateHour.toFixed(2)} PLN/h
