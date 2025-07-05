@@ -34,10 +34,21 @@ export async function GET() {
 
     const startOfMonth = new Date('2025-07-01T00:00:00')
     const now = new Date()
+    // Calculate how many seconds have passed since the start of the month
     const secondsPassed = Math.floor((now.getTime() - startOfMonth.getTime()) / 1000)
-console.log(expensesSum);
-    const burnRate = secondsPassed > 0 ? expensesSum / secondsPassed : 0
-    return NextResponse.json({ burnRate })
+    console.log(expensesSum);
+    // Burn rate per second
+    const burnRateSecond = secondsPassed > 0 ? expensesSum / secondsPassed : 0
+    // Calculate how many minutes have passed since the start of the month
+    const minutesPassed = Math.floor(secondsPassed / 60)
+    // Burn rate per minute
+    const burnRateMinute = minutesPassed > 0 ? expensesSum / minutesPassed : 0
+    // Calculate how many hours have passed since the start of the month
+    const hoursPassed = Math.floor(minutesPassed / 60)
+    // Burn rate per hour
+    const burnRateHour = hoursPassed > 0 ? expensesSum / hoursPassed : 0
+    // Return all burn rates in the API response
+    return NextResponse.json({ burnRateSecond, burnRateMinute, burnRateHour })
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 })
   }
