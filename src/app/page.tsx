@@ -18,7 +18,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('/api/')
+      const res = await fetch('/api/month')
       const json = await res.json()
       setData(json)
     }

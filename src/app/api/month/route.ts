@@ -1,4 +1,4 @@
-// src/app/api/months/route.ts
+// src/app/api/month/route.ts
 
 import { NextResponse } from 'next/server'
 import axios from 'axios'
@@ -91,4 +91,4 @@ export async function GET() {
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 })
   }
-}
+} 
