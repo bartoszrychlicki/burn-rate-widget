@@ -11,6 +11,7 @@ export default function HomePage() {
     earnRateMinute: 0,
     earnRateHour: 0,
     flowRateSecond: 0,
+    flowRateMinute: 0,
     flowRate: 0,
     potentialSavings: 0
   })
@@ -37,13 +38,13 @@ export default function HomePage() {
         fontSize: '3.5rem', 
         margin: '2rem',
         fontWeight: 'bold',
-        color: data.flowRateSecond >= 0 ? '#22c55e' : '#ef4444',
+        color: data.flowRateMinute >= 0 ? '#22c55e' : '#ef4444',
         padding: '2rem',
-        border: `3px solid ${data.flowRateSecond >= 0 ? '#22c55e' : '#ef4444'}`,
+        border: `3px solid ${data.flowRateMinute >= 0 ? '#22c55e' : '#ef4444'}`,
         borderRadius: '1rem',
-        backgroundColor: data.flowRateSecond >= 0 ? '#f0fdf4' : '#fef2f2'
+        backgroundColor: data.flowRateMinute >= 0 ? '#f0fdf4' : '#fef2f2'
       }}>
-        {data.flowRateSecond >= 0 ? '📈' : '📉'} {data.flowRateSecond.toFixed(8)} PLN/s
+        {data.flowRateMinute >= 0 ? '📈' : '📉'} {data.flowRateMinute.toFixed(6)} PLN/min
       </div>
       
       {/* Description */}

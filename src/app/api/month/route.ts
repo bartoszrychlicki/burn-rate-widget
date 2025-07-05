@@ -46,8 +46,8 @@ export async function GET() {
     const burnRateSecond = secondsPassed > 0 ? expensesSum / secondsPassed : 0
     // Calculate how many minutes have passed since the start of the month
     const minutesPassed = Math.floor(secondsPassed / 60)
-    // Burn rate per minute
-    const burnRateMinute = minutesPassed > 0 ? expensesSum / minutesPassed : 0
+    // Burn rate per minute (more fluid, updates every second)
+    const burnRateMinute = secondsPassed > 0 ? expensesSum / (secondsPassed / 60) : 0
     // Calculate how many hours have passed since the start of the month
     const hoursPassed = Math.floor(minutesPassed / 60)
     // Burn rate per hour
@@ -68,6 +68,8 @@ export async function GET() {
 
     // Flow rate per second (difference between earn and burn rate per second)
     const flowRateSecond = earnRateSecond - burnRateSecond
+    // Flow rate per minute (difference between earn and burn rate per minute)
+    const flowRateMinute = earnRateMinute - burnRateMinute
     // Flow rate per hour (difference between earn and burn rate)
     const flowRate = earnRateHour - burnRateHour
 
@@ -85,6 +87,7 @@ export async function GET() {
       earnRateMinute,
       earnRateHour,
       flowRateSecond,
+      flowRateMinute,
       flowRate,
       potentialSavings
     })
