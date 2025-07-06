@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Troubleshooting
+
+### "WebSocket connection to 'ws://localhost:8098/' failed"
+If you open the application with the React Developer Tools browser extension active, the extension tries to connect to a local debugging server on port 8098. In production such a server is not running, so the console reports a failed WebSocket connection. This warning is harmless and does not affect the widget.
+
+### Data refresh frequency
+The widget fetches data from `/api/month` every 15 seconds. Computed burn and earn rates are updated once per second to provide a smooth display. Network requests should therefore occur every 15 seconds.
