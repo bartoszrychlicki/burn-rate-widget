@@ -78,10 +78,13 @@ export async function GET() {
     // Calculate potential savings by the end of the month
     const potentialSavings = flowRateSecond * remainingSecondsInMonth
 
-    // Return all burn rates and earn rates in the API response
-    return NextResponse.json({ 
-      burnRateSecond, 
-      burnRateMinute, 
+    // Return raw values and all calculated rates in the API response
+    return NextResponse.json({
+      rawExpenses: expensesSum,
+      rawIncome: incomeSum,
+      rawEstimatedIncome: estimatedIncomeSum,
+      burnRateSecond,
+      burnRateMinute,
       burnRateHour,
       earnRateSecond,
       earnRateMinute,

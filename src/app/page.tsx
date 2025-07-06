@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react'
 
 export default function HomePage() {
-  const [data, setData] = useState({ 
-    burnRateSecond: 0, 
-    burnRateMinute: 0, 
+  const [data, setData] = useState({
+    burnRateSecond: 0,
+    burnRateMinute: 0,
     burnRateHour: 0,
     earnRateSecond: 0,
     earnRateMinute: 0,
@@ -15,19 +15,76 @@ export default function HomePage() {
     flowRate: 0,
     potentialSavings: 0
   })
+  const [rawData, setRawData] = useState({
+    rawExpenses: 0,
+    rawIncome: 0,
+    rawEstimatedIncome: 0
+  })
   const [showDetails, setShowDetails] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch('/api/month')
       const json = await res.json()
-      setData(json)
+      setRawData({
+        rawExpenses: json.rawExpenses,
+        rawIncome: json.rawIncome,
+        rawEstimatedIncome: json.rawEstimatedIncome
+      })
     }
 
     fetchData()
-    const interval = setInterval(fetchData, 1000)
+    const interval = setInterval(fetchData, 15000)
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    const computeData = () => {
+      const startOfMonth = new Date('2025-07-01T00:00:00')
+      const endOfMonth = new Date('2025-07-31T23:59:59')
+      const now = new Date()
+
+      const secondsPassed = Math.floor((now.getTime() - startOfMonth.getTime()) / 1000)
+      const minutesPassed = Math.floor(secondsPassed / 60)
+      const hoursPassed = Math.floor(minutesPassed / 60)
+
+      const totalSecondsInMonth = Math.floor((endOfMonth.getTime() - startOfMonth.getTime()) / 1000)
+      const totalMinutesInMonth = Math.floor(totalSecondsInMonth / 60)
+      const totalHoursInMonth = Math.floor(totalMinutesInMonth / 60)
+
+      const burnRateSecond = secondsPassed > 0 ? rawData.rawExpenses / secondsPassed : 0
+      const burnRateMinute = secondsPassed > 0 ? rawData.rawExpenses / (secondsPassed / 60) : 0
+      const burnRateHour = hoursPassed > 0 ? rawData.rawExpenses / hoursPassed : 0
+
+      const earnRateSecond = totalSecondsInMonth > 0 ? rawData.rawEstimatedIncome / totalSecondsInMonth : 0
+      const earnRateMinute = totalMinutesInMonth > 0 ? rawData.rawEstimatedIncome / totalMinutesInMonth : 0
+      const earnRateHour = totalHoursInMonth > 0 ? rawData.rawEstimatedIncome / totalHoursInMonth : 0
+
+      const flowRateSecond = earnRateSecond - burnRateSecond
+      const flowRateMinute = earnRateMinute - burnRateMinute
+      const flowRate = earnRateHour - burnRateHour
+
+      const remainingSecondsInMonth = totalSecondsInMonth - secondsPassed
+      const potentialSavings = flowRateSecond * remainingSecondsInMonth
+
+      setData({
+        burnRateSecond,
+        burnRateMinute,
+        burnRateHour,
+        earnRateSecond,
+        earnRateMinute,
+        earnRateHour,
+        flowRateSecond,
+        flowRateMinute,
+        flowRate,
+        potentialSavings
+      })
+    }
+
+    computeData()
+    const interval = setInterval(computeData, 1000)
+    return () => clearInterval(interval)
+  }, [rawData])
 
   return (
     <div className="font-mono text-center mt-16">
