@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import HourlySavingsTimeline from '../components/HourlySavingsTimeline'
 
 export default function HomePage() {
   const [data, setData] = useState({
@@ -86,6 +87,25 @@ export default function HomePage() {
     return () => clearInterval(interval)
   }, [rawData])
 
+  // Store current flow rate each minute
+  const flowRef = useRef(0)
+  useEffect(() => {
+    flowRef.current = data.flowRateMinute
+  }, [data.flowRateMinute])
+
+  useEffect(() => {
+    const send = () => {
+      fetch('/api/burnrate/record', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: flowRef.current })
+      })
+    }
+    send()
+    const interval = setInterval(send, 60000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <div className="font-mono text-center mt-16">
       <h1 className="text-4xl font-bold mb-8">💸 Burn Rate Widget</h1>
@@ -113,6 +133,8 @@ export default function HomePage() {
       `}>
         🎯 At this rate, by the end of the month you'll {data.potentialSavings >= 0 ? 'save' : 'lose'}: {Math.abs(data.potentialSavings).toFixed(2)} PLN
       </div>
+
+      <HourlySavingsTimeline />
       
       {/* Toggle Button */}
       <button 
