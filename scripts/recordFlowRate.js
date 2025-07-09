@@ -1,15 +1,8 @@
 const axios = require('axios')
-const Database = require('better-sqlite3')
-const path = require('path')
+const { createClient } = require('@supabase/supabase-js')
 require('dotenv/config')
 
-const dbPath = path.join(process.cwd(), 'burnrate.db')
-const db = new Database(dbPath)
-db.exec(`CREATE TABLE IF NOT EXISTS burn_rates (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  timestamp INTEGER NOT NULL,
-  value REAL NOT NULL
-)`)
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY)
 
 async function fetchMonth() {
   const token = process.env.AIRTABLE_TOKEN
@@ -32,7 +25,9 @@ function computeFlowRateMinute(records) {
   const expensesSum = parseFloat(rawExpenses.replace('PLN', '').replace(',', '').trim())
 
   const rawEstimatedIncome = String(lipiec.fields['estimated_income_sum'] || '0')
-  const estimatedIncomeSum = parseFloat(rawEstimatedIncome.replace('PLN', '').replace('-', '').replace(',', '').trim())
+  const estimatedIncomeSum = parseFloat(
+    rawEstimatedIncome.replace('PLN', '').replace('-', '').replace(',', '').trim()
+  )
 
   const startOfMonth = new Date('2025-07-01T00:00:00')
   const now = new Date()
@@ -50,8 +45,8 @@ async function main() {
   try {
     const records = await fetchMonth()
     const value = computeFlowRateMinute(records)
-    const stmt = db.prepare('INSERT INTO burn_rates (timestamp, value) VALUES (?, ?)')
-    stmt.run(Date.now(), value)
+    const { error } = await supabase.from('burn_rates').insert({ timestamp: Date.now(), value })
+    if (error) throw error
     console.log('Recorded value', value)
   } catch (err) {
     console.error(err)

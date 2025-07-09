@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server'
-import db from '@/lib/db'
+import { fetchBurnRates } from '@/lib/supabase'
 
 export async function GET() {
   const now = new Date()
   const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const startYesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)
 
-  function groupAndSum(start: Date, end: Date) {
-    const rows = db
-      .prepare('SELECT timestamp, value FROM burn_rates WHERE timestamp >= ? AND timestamp < ?')
-      .all(start.getTime(), end.getTime()) as { timestamp: number; value: number }[]
+  async function groupAndSum(start: Date, end: Date) {
+    const rows = await fetchBurnRates(start.getTime(), end.getTime())
     const map = new Map<number, number[]>()
     for (const r of rows) {
       const h = new Date(r.timestamp).getHours()
@@ -27,8 +25,12 @@ export async function GET() {
     return { hourly, total }
   }
 
-  const today = groupAndSum(startToday, now)
-  const yesterday = groupAndSum(startYesterday, startToday)
+  const today = await groupAndSum(startToday, now)
+  const yesterday = await groupAndSum(startYesterday, startToday)
 
-  return NextResponse.json({ hourly: today.hourly, totalToday: today.total, totalYesterday: yesterday.total })
+  return NextResponse.json({
+    hourly: today.hourly,
+    totalToday: today.total,
+    totalYesterday: yesterday.total,
+  })
 }
