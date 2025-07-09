@@ -8,9 +8,14 @@ export default function LiveBurnRate() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('/api/month')
-      const json = await res.json()
-      setFlowRate(json?.flowRateMinute ?? null)
+      try {
+        const res = await fetch('/api/month')
+        if (!res.ok) throw new Error('Request failed')
+        const json = await res.json()
+        setFlowRate(json?.flowRateMinute ?? null)
+      } catch (err) {
+        console.error(err)
+      }
     }
 
     fetchData()
@@ -22,5 +27,4 @@ export default function LiveBurnRate() {
     <div style={{ fontSize: '2.5rem', textAlign: 'center', marginTop: '3rem', fontFamily: 'monospace' }}>
       {flowRate !== null ? `${flowRate.toFixed(6)} PLN/s` : 'Loading...'}
     </div>
-  )
-}
+  )}

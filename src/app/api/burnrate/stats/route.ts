@@ -1,13 +1,20 @@
 import { NextResponse } from 'next/server'
 import { fetchBurnRates } from '@/lib/supabase'
 
+// Returns aggregated burn rate statistics for today and yesterday
+
 export async function GET() {
   const now = new Date()
   const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const startYesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)
 
   async function groupAndSum(start: Date, end: Date) {
-    const rows = await fetchBurnRates(start.getTime(), end.getTime())
+    let rows: { timestamp: number; value: number }[] = []
+    try {
+      rows = await fetchBurnRates(start.getTime(), end.getTime())
+    } catch (err) {
+      console.error(err)
+    }
     const map = new Map<number, number[]>()
     for (const r of rows) {
       const h = new Date(r.timestamp).getHours()

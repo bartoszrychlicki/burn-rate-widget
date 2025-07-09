@@ -1,4 +1,5 @@
 // src/app/api/month/route.ts
+// Returns burn rate and earnings data for the current month
 
 import { NextResponse } from 'next/server'
 import axios from 'axios'
@@ -6,6 +7,11 @@ import axios from 'axios'
 export async function GET() {
   const token = process.env.AIRTABLE_TOKEN
   const baseId = process.env.AIRTABLE_BASE_ID
+
+  if (!token || !baseId) {
+    return NextResponse.json({ error: 'Missing Airtable credentials' }, { status: 500 })
+  }
+
   const url = `https://api.airtable.com/v0/${baseId}/months`
 
   try {
@@ -23,25 +29,21 @@ export async function GET() {
     }
 
     const rawExpenses = String(lipiec.fields['expenses_sum'] || '0')
-    const expensesSum = parseFloat(
-      rawExpenses.replace('PLN', '').replace(',', '').trim()
-    )
+    const expensesSum = parseFloat(rawExpenses.replace(/[^0-9.-]/g, ''))
+    if (Number.isNaN(expensesSum)) throw new Error('Invalid expenses sum')
     
     const rawIncome = String(lipiec.fields['income_sum'] || '0')
-    const incomeSum = parseFloat(
-      rawIncome.replace('PLN', '').replace('-', '').replace(',', '').trim()
-    )
+    const incomeSum = parseFloat(rawIncome.replace(/[^0-9.-]/g, ''))
+    if (Number.isNaN(incomeSum)) throw new Error('Invalid income sum')
 
     const rawEstimatedIncome = String(lipiec.fields['estimated_income_sum'] || '0')
-    const estimatedIncomeSum = parseFloat(
-      rawEstimatedIncome.replace('PLN', '').replace('-', '').replace(',', '').trim()
-    )
+    const estimatedIncomeSum = parseFloat(rawEstimatedIncome.replace(/[^0-9.-]/g, ''))
+    if (Number.isNaN(estimatedIncomeSum)) throw new Error('Invalid estimated income')
 
     const startOfMonth = new Date('2025-07-01T00:00:00')
     const now = new Date()
     // Calculate how many seconds have passed since the start of the month
     const secondsPassed = Math.floor((now.getTime() - startOfMonth.getTime()) / 1000)
-    console.log(expensesSum);
     // Burn rate per second
     const burnRateSecond = secondsPassed > 0 ? expensesSum / secondsPassed : 0
     // Calculate how many minutes have passed since the start of the month
