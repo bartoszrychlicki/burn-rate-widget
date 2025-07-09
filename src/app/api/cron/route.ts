@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import axios from 'axios'
-import db from '@/lib/db'
+import { insertBurnRate } from '@/lib/supabase'
 
 export async function GET(req: NextRequest) {
   if (req.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -40,8 +40,10 @@ export async function GET(req: NextRequest) {
     const earnRateMinute = totalMinutesInMonth > 0 ? estimatedIncomeSum / totalMinutesInMonth : 0
     const flowRateMinute = earnRateMinute - burnRateMinute
 
-    const stmt = db.prepare('INSERT INTO burn_rates (timestamp, value) VALUES (?, ?)')
-    stmt.run(Date.now(), flowRateMinute)
+    const { error } = await insertBurnRate(flowRateMinute)
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
 
     return NextResponse.json({ ok: true, value: flowRateMinute })
   } catch (err: any) {
