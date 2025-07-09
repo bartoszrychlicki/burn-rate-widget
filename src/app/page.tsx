@@ -108,7 +108,6 @@ export default function HomePage() {
 
   return (
     <div className="font-mono text-center mt-16">
-      <h1 className="text-4xl font-bold mb-8">💸 Burn Rate Widget</h1>
       
       {/* Main Flow Rate Display */}
       <div className={`
@@ -118,12 +117,11 @@ export default function HomePage() {
           : 'text-red-500 border-red-500 bg-red-50'
         }
       `}>
-        {data.flowRateMinute >= 0 ? '📈' : '📉'} {data.flowRateMinute.toFixed(6)} PLN/min
+        I'm saving {data.flowRateMinute.toFixed(6)} PLN/min
       </div>
       
       {/* Description */}
       <div className="text-lg mx-8 my-4 text-gray-500 italic max-w-2xl mx-auto leading-relaxed">
-        💡 This is your cash flow indicator - when you spend money it goes down, when you don't spend it slowly grows back up 😉
       </div>
       
       {/* Savings Projection */}
