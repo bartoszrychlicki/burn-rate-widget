@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import axios from 'axios'
 import { insertBurnRate } from '@/lib/supabase'
 
+// Cron endpoint triggered by Vercel to store hourly flow rate samples
+
 export async function GET(req: NextRequest) {
   if (req.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
     return new NextResponse('Unauthorized', { status: 401 })
@@ -24,11 +26,13 @@ export async function GET(req: NextRequest) {
     }
 
     const rawExpenses = String(lipiec.fields['expenses_sum'] || '0')
-    const expensesSum = parseFloat(rawExpenses.replace('PLN', '').replace(',', '').trim())
+    const expensesSum = parseFloat(rawExpenses.replace(/[^0-9.-]/g, ''))
+    if (Number.isNaN(expensesSum)) throw new Error('Invalid expenses sum')
     const rawEstimatedIncome = String(lipiec.fields['estimated_income_sum'] || '0')
     const estimatedIncomeSum = parseFloat(
-      rawEstimatedIncome.replace('PLN', '').replace('-', '').replace(',', '').trim()
+      rawEstimatedIncome.replace(/[^0-9.-]/g, '')
     )
+    if (Number.isNaN(estimatedIncomeSum)) throw new Error('Invalid estimated income')
 
     const startOfMonth = new Date('2025-07-01T00:00:00')
     const now = new Date()

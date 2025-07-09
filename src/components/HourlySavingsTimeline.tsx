@@ -13,9 +13,14 @@ export default function HourlySavingsTimeline() {
   const [stats, setStats] = useState<Stats>({ hourly: [], totalToday: 0, totalYesterday: 0 })
 
   const fetchStats = async () => {
-    const res = await fetch('/api/burnrate/stats')
-    const json = await res.json()
-    setStats(json)
+    try {
+      const res = await fetch('/api/burnrate/stats')
+      if (!res.ok) throw new Error('Request failed')
+      const json = await res.json()
+      setStats(json)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   useEffect(() => {

@@ -25,13 +25,18 @@ export default function HomePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('/api/month')
-      const json = await res.json()
-      setRawData({
-        rawExpenses: json.rawExpenses,
-        rawIncome: json.rawIncome,
-        rawEstimatedIncome: json.rawEstimatedIncome
-      })
+      try {
+        const res = await fetch('/api/month')
+        if (!res.ok) throw new Error('Request failed')
+        const json = await res.json()
+        setRawData({
+          rawExpenses: json.rawExpenses,
+          rawIncome: json.rawIncome,
+          rawEstimatedIncome: json.rawEstimatedIncome
+        })
+      } catch (err) {
+        console.error(err)
+      }
     }
 
     fetchData()
