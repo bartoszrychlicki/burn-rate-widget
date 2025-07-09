@@ -31,14 +31,14 @@ export default function HourlySavingsTimeline() {
   return (
     <div className="mx-8 my-6">
       <h2 className="text-xl font-semibold mb-2">🕑 Savings by Hour</h2>
-      <div className="flex items-end space-x-2 overflow-x-auto">
+      <div className="flex items-end overflow-x-auto w-full gap-2">
         {hours.map((hour) => {
           const avg = hourMap.get(hour)
           const isNow = hour === currentHour
           return (
             <div
               key={hour}
-              className={`text-center ${isNow ? 'border-b-2 border-blue-500' : ''}`}
+              className={`flex-1 text-center ${isNow ? 'border-b-2 border-blue-500' : ''}`}
             >
               <div
                 className={`px-2 py-1 rounded ${
