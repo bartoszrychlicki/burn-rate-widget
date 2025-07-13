@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import HourlySavingsTimeline from '../components/HourlySavingsTimeline'
+import DailyChallenge from '../components/DailyChallenge'
 
 export default function HomePage() {
   const [data, setData] = useState({
@@ -138,6 +139,8 @@ export default function HomePage() {
       </div>
 
       <HourlySavingsTimeline />
+
+      <DailyChallenge />
       
       {/* Toggle Button */}
       <button 
