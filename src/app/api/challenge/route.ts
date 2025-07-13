@@ -1,6 +1,34 @@
 import { NextResponse } from 'next/server'
 import axios from 'axios'
 
+// Helper to parse date strings returned from Airtable
+function parseTransactionDate(value: string): Date | null {
+  const direct = new Date(value)
+  if (!isNaN(direct.getTime())) return direct
+  const m = value.match(/(\d{1,2})\s+([\p{L}]+)\s+(\d{4})/u)
+  if (!m) return null
+  const day = parseInt(m[1], 10)
+  const monthName = m[2].toLowerCase()
+  const year = parseInt(m[3], 10)
+  const months: Record<string, number> = {
+    'stycznia': 1,
+    'lutego': 2,
+    'marca': 3,
+    'kwietnia': 4,
+    'maja': 5,
+    'czerwca': 6,
+    'lipca': 7,
+    'sierpnia': 8,
+    'września': 9,
+    'października': 10,
+    'listopada': 11,
+    'grudnia': 12
+  }
+  const month = months[monthName]
+  if (!month) return null
+  return new Date(Date.UTC(year, month - 1, day))
+}
+
 export async function GET() {
   const token = process.env.AIRTABLE_TOKEN
   const baseId = process.env.AIRTABLE_BASE_ID
@@ -35,7 +63,10 @@ export async function GET() {
     for (const rec of records) {
       const val = parseFloat(String(rec.fields.Value || '0').replace(/[^0-9.-]/g, ''))
       if (Number.isNaN(val) || val <= 0) continue
-      const date = new Date(rec.fields['transaction date'])
+      const raw = String(rec.fields['transaction date'] || '')
+      const parsed = parseTransactionDate(raw)
+      if (!parsed) continue
+      const date = parsed
       totalMonth += val
       if (date >= startToday && date < endToday) {
         spentToday += val
