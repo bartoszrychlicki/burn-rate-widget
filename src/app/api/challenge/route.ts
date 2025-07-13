@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import axios from 'axios'
+import { fetchBurnRates } from '@/lib/supabase'
 
 // Helper to parse date strings returned from Airtable
 function parseTransactionDate(value: string): Date | null {
@@ -79,6 +80,7 @@ export async function GET() {
     const daysCompleted = Math.max(dayOfMonth - 1, 1)
     const expensesUntilYesterday = totalMonth - spentToday
     const avgDaily = expensesUntilYesterday / daysCompleted
+
     const challengeLimit = avgDaily * 0.99
 
     return NextResponse.json({
