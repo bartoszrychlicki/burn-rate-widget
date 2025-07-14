@@ -62,7 +62,13 @@ export async function GET() {
     endToday.setDate(endToday.getDate() + 1)
 
     for (const rec of records) {
-      const val = parseFloat(String(rec.fields.Value || '0').replace(/[^0-9.-]/g, ''))
+      const fixed = rec.fields['fixed_expense']
+      const isFixed = fixed === true || String(fixed).toLowerCase() === 'true'
+      if (isFixed) continue
+
+      const val = parseFloat(
+        String(rec.fields.Value || '0').replace(/[^0-9.-]/g, '')
+      )
       if (Number.isNaN(val) || val <= 0) continue
       const raw = String(rec.fields['transaction date'] || '')
       const parsed = parseTransactionDate(raw)
