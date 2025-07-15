@@ -47,5 +47,8 @@ If you open the application with the React Developer Tools browser extension act
 ### Data refresh frequency
 The widget fetches data from `/api/month` every 15 seconds. Computed burn and earn rates are updated once per second to provide a smooth display. Network requests should therefore occur every 15 seconds.
 
+### Spend‑RPM gauge
+Visit `/rpm` to see a simple gauge visualising the current cash burn speed. The indicator compares the actual burn rate with the planned allowance and updates once per second.
+
 ### Automated cron job
 Burn rate samples are stored server-side by a Vercel cron job. The job calls `/api/cron` every minute with the `CRON_SECRET` value in the `Authorization` header. Set the same secret in your project environment so the endpoint can authenticate the request.
