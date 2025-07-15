@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { createChart, CandlestickSeriesOptions } from 'lightweight-charts'
+import { createChart, CandlestickSeries, CandlestickSeriesPartialOptions, UTCTimestamp } from 'lightweight-charts'
 
 interface Candle {
   timestamp: number
@@ -22,7 +22,7 @@ export default function FlowRateCandlestick() {
       width: containerRef.current.clientWidth,
       height: 300,
     })
-    const series = chartRef.current.addCandlestickSeries({} as CandlestickSeriesOptions)
+    const series = chartRef.current.addSeries(CandlestickSeries, {} as CandlestickSeriesPartialOptions)
 
     const fetchData = async () => {
       try {
@@ -30,7 +30,7 @@ export default function FlowRateCandlestick() {
         if (!res.ok) throw new Error('Request failed')
         const json = await res.json()
         const data = (json.candles as Candle[]).map(c => ({
-          time: c.timestamp / 1000,
+          time: (c.timestamp / 1000) as UTCTimestamp,
           open: c.open,
           high: c.high,
           low: c.low,
