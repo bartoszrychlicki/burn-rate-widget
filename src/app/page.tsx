@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import HourlySavingsTimeline from '../components/HourlySavingsTimeline'
+import FlowRateCandlestick from '../components/FlowRateCandlestick'
 import DailyChallenge from '../components/DailyChallenge'
 
 export default function HomePage() {
@@ -139,6 +140,8 @@ export default function HomePage() {
       </div>
 
       <HourlySavingsTimeline />
+
+      <FlowRateCandlestick />
 
       <DailyChallenge />
       
