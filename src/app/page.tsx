@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from 'react'
 import HourlySavingsTimeline from '../components/HourlySavingsTimeline'
-import FlowRateCandlestick from '../components/FlowRateCandlestick'
 import DailyChallenge from '../components/DailyChallenge'
 
 export default function HomePage() {
@@ -124,7 +123,7 @@ export default function HomePage() {
           : 'text-red-500 border-red-500 bg-red-50'
         }
       `}>
-        I'm saving {data.flowRateMinute.toFixed(6)} PLN/min
+        I&apos;m saving {data.flowRateMinute.toFixed(6)} PLN/min
       </div>
       
       {/* Description */}
@@ -136,12 +135,10 @@ export default function HomePage() {
         text-xl mx-8 my-6 font-bold max-w-2xl mx-auto leading-relaxed
         ${data.potentialSavings >= 0 ? 'text-emerald-700' : 'text-red-700'}
       `}>
-        🎯 At this rate, by the end of the month you'll {data.potentialSavings >= 0 ? 'save' : 'lose'}: {Math.abs(data.potentialSavings).toFixed(2)} PLN
+        🎯 At this rate, by the end of the month you&apos;ll {data.potentialSavings >= 0 ? 'save' : 'lose'}: {Math.abs(data.potentialSavings).toFixed(2)} PLN
       </div>
 
       <HourlySavingsTimeline />
-
-      <FlowRateCandlestick />
 
       <DailyChallenge />
       
